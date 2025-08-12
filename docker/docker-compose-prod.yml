@@ -14,7 +14,7 @@ services:
       - ./FinanzNew/db:/var/lib/postgresql/data
 
   finanz_backend:
-    build: ..
+    build: .
     restart: always
     container_name: finanz_backend
     depends_on:
