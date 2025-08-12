@@ -49,7 +49,7 @@ const start = async () => {
   app.use(user);
 
   app.get("/ping", (_, res) => {
-    res.send("pong");
+    res.send("pong...");
   });
 
   await apolloServer
