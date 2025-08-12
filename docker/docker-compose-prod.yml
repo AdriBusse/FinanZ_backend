@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE}
     volumes:
-      - ./Finanz/db:/var/lib/postgresql/data
+      - ./FinanzNew/db:/var/lib/postgresql/data
 
   finanz_backend:
     build: ..
@@ -20,7 +20,7 @@ services:
     depends_on:
       - finanzdb
     ports:
-      - "4200:4000"
+      - "4201:4000"
     environment:
       - DB_Host=${DB_HOST}
       - DB_PORT=${DB_PORT}
@@ -34,7 +34,7 @@ services:
   dbbackups:
     image: kartoza/pg-backup
     volumes:
-      - ./Finanz/backupdb:/backups
+      - ./FinanzNew/backupdb:/backups
     environment:
       - DUMPPREFIX=pgfinanz
       - POSTGRES_HOST=${DB_HOST}
