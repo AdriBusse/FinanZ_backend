@@ -1,0 +1,47 @@
+version: "3.1"
+services:
+  finanzdb:
+    image: postgres:14.8
+    container_name: finanzdb
+    restart: always
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    volumes:
+      - ./Finanz/db:/var/lib/postgresql/data
+
+  finanz_backend:
+    build: .
+    restart: always
+    container_name: finanz_backend
+    depends_on:
+      - finanzdb
+    ports:
+      - "4200:4000"
+    environment:
+      - DB_Host=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+      - prod=${prod}
+    links:
+      - finanzdb
+
+  dbbackups:
+    image: kartoza/pg-backup
+    volumes:
+      - ./Finanz/backupdb:/backups
+    environment:
+      - DUMPPREFIX=pgfinanz
+      - POSTGRES_HOST=${DB_HOST}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASS=${DB_PASSWORD}
+      - POSTGRES_PORT=${DB_PORT}
+      - CRON_SCHEDULE="*/1 * * * *"
+    restart: on-failure
+    depends_on:
+      - finanzdb
