@@ -32,7 +32,7 @@ services:
       - finanzdb
 
   dbbackups:
-    image: kartoza/pg-backup:17.3.5
+    image: kartoza/pg-backup:17-3.5
     volumes:
       - ./FinanzNew/backupdb:/backups
     environment:
