@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   finanzdb:
-    image: postgres:14.8
+    image: postgres:17
     container_name: finanzdb2025
     restart: always
     ports:
@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_DATABASE}
     volumes:
-      - ./FinanzNew/db:/var/lib/postgresql/data
+      - ./FinanzNew/dbv17:/var/lib/postgresql/data
 
   finanz_backend:
     build: .
@@ -32,7 +32,7 @@ services:
       - finanzdb
 
   dbbackups:
-    image: kartoza/pg-backup:14
+    image: kartoza/pg-backup:17.3.5
     volumes:
       - ./FinanzNew/backupdb:/backups
     environment:
