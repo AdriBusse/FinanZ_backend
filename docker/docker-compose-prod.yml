@@ -2,7 +2,7 @@ version: "3.1"
 services:
   finanzdb:
     image: postgres:14.8
-    container_name: finanzdb
+    container_name: finanzdb2025
     restart: always
     ports:
       - "${DB_PORT}:5432"

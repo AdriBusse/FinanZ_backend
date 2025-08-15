@@ -24,6 +24,7 @@ import { MeResolver } from "../modules/graphql/User/me";
 import { LogoutResolver } from "../modules/graphql/User/logout";
 import { SignupResolver } from "../modules/graphql/User/signup";
 import { LoginResolver } from "../modules/graphql/User/login";
+import { ChangePasswordResolver } from "../modules/graphql/User/changePassword";
 import { GetUserResolver } from "../modules/graphql/User/getUser";
 import { UserResolver } from "../modules/graphql/ClassResolver/User.resolver";
 import { UpdateSavingTransactionResolver } from "../modules/graphql/Saving/Transaction/UpdateTransaction.resolver";
@@ -61,6 +62,7 @@ export const createSchema = () => {
       LogoutResolver,
       MeResolver,
       SignupResolver,
+      ChangePasswordResolver,
 
       SavingDepotResolver,
       SavingTransactionResolver,
