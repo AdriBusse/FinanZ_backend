@@ -10,6 +10,7 @@ import { UpdateExpenseCategoryResolver } from "../modules/graphql/Expense/Catego
 import { GetExpensesResolver } from "../modules/graphql/Expense/Expense/GetExpenses.resolver";
 import { UpdateExpenseTransactionResolver } from "../modules/graphql/Expense/Transaction/UpdateExpenseTransactions.resolver";
 import { GetExpenseCategoriesResolver } from "../modules/graphql/Expense/Category/GetCategories.resolver";
+import { GetCategoryMetadataResolver } from "../modules/graphql/Expense/Category/GetCategoryMetadata.resolver";
 import { DeleteExpenseCategoryResolver } from "../modules/graphql/Expense/Category/DeleteExpenseCategory.resolver";
 import { CreateExpenseCategoryResolver } from "../modules/graphql/Expense/Category/CreateExpenseCategory.resolver";
 import { ExpenseCategoryResolver } from "../modules/graphql/ClassResolver/ExpenseCategory.resolver";
@@ -108,6 +109,7 @@ export const createSchema = () => {
       CreateExpenseCategoryResolver,
       DeleteExpenseCategoryResolver,
       GetExpenseCategoriesResolver,
+      GetCategoryMetadataResolver,
       UpdateExpenseCategoryResolver,
 
       Summary,
