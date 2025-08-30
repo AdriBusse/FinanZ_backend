@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   finanzdb:
-    image: postgres:17
+    image: postgres:16
     container_name: finanzdb2025
     restart: always
     ports:
@@ -31,17 +31,18 @@ services:
     links:
       - finanzdb
 
-  dbbackups:
-    image: kartoza/pg-backup:17-3.5
-    volumes:
-      - ./FinanzNew/backupdb:/backups
+  backup:
+    image: eeshugerman/postgres-backup-s3:16
     environment:
-      - DUMPPREFIX=pgfinanz
-      - POSTGRES_HOST=${DB_HOST}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASS=${DB_PASSWORD}
-      - POSTGRES_PORT=${DB_PORT}
-      - CRON_SCHEDULE="*/1 * * * *"
-    restart: on-failure
-    depends_on:
-      - finanzdb
+      SCHEDULE: '@daily'     # optional
+      BACKUP_KEEP_DAYS: 7     # optional
+      PASSPHRASE: ${BACKUP_PASSPHRASE}  # optional
+      S3_REGION: region
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_PREFIX: backup
+      POSTGRES_HOST: ${DB_HOST}
+      POSTGRES_DATABASE: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
