@@ -24,25 +24,68 @@ const categoryMetadata: CategoryMetadataRecord = {
     { key: "amber-2", hex: "#fbbf24", label: "Amber" },
   ],
   icons: [
+    // Food & Dining
     { keyword: 'food', icon: '🍕', label: 'Food' },
-    { keyword: 'transport', icon: '🚗', label: 'Transport' },
-    { keyword: 'shopping', icon: '🛍️', label: 'Shopping' },
-    { keyword: 'entertainment', icon: '🎬', label: 'Entertainment' },
-    { keyword: 'health', icon: '🏥', label: 'Health' },
-    { keyword: 'education', icon: '📚', label: 'Education' },
-    { keyword: 'home', icon: '🏠', label: 'Home' },
-    { keyword: 'work', icon: '💼', label: 'Work' },
-    { keyword: 'travel', icon: '✈️', label: 'Travel' },
-    { keyword: 'bills', icon: '📄', label: 'Bills' },
-    { keyword: 'utilities', icon: '⚡', label: 'Utilities' },
-    { keyword: 'insurance', icon: '🛡️', label: 'Insurance' },
-    { keyword: 'gifts', icon: '🎁', label: 'Gifts' },
-    { keyword: 'sports', icon: '⚽', label: 'Sports' },
-    { keyword: 'technology', icon: '💻', label: 'Technology' },
-    { keyword: 'beauty', icon: '💄', label: 'Beauty' },
-    { keyword: 'pets', icon: '🐕', label: 'Pets' },
+    { keyword: 'restaurant', icon: '🍝', label: 'Restaurants' },
+    { keyword: 'groceries', icon: '🛒', label: 'Groceries' },
+    { keyword: 'restaurant', icon: '🍽️', label: 'Restaurants' },
     { keyword: 'coffee', icon: '☕', label: 'Coffee' },
     { keyword: 'alcohol', icon: '🍺', label: 'Alcohol' },
+
+    // Housing & Utilities
+    { keyword: 'rent', icon: '🏠', label: 'Rent' },
+    { keyword: 'home', icon: '🏡', label: 'Home & Garden' },
+    { keyword: 'bills', icon: '📄', label: 'Bills' },
+    { keyword: 'utilities', icon: '⚡', label: 'Utilities' },
+    { keyword: 'electricity', icon: '⚡', label: 'Electricity' },
+    { keyword: 'water', icon: '💧', label: 'Water' },
+    { keyword: 'gas-home', icon: '🔥', label: 'Gas (Home)' },
+    { keyword: 'internet', icon: '📶', label: 'Internet' },
+    { keyword: 'phone', icon: '📱', label: 'Mobile Phone' },
+
+    // Transport
+    { keyword: 'transport', icon: '🚗', label: 'Transport' },
+    { keyword: 'fuel', icon: '⛽', label: 'Fuel' },
+    { keyword: 'public-transport', icon: '🚌', label: 'Public Transport' },
+    { keyword: 'parking', icon: '🅿️', label: 'Parking' },
+    { keyword: 'car-maintenance', icon: '🛠️', label: 'Car Maintenance' },
+    { keyword: 'bike-maintenance', icon: '🛵', label: 'Bike Maintenance' },
+
+    // Insurance & Health
+    { keyword: 'insurance', icon: '🛡️', label: 'Insurance' },
+    { keyword: 'health', icon: '🏥', label: 'Health' },
+    { keyword: 'pharmacy', icon: '💊', label: 'Pharmacy' },
+
+    // Entertainment & Subscriptions
+    { keyword: 'entertainment', icon: '🎬', label: 'Entertainment' },
+    { keyword: 'streaming', icon: '📺', label: 'Streaming' },
+    { keyword: 'subscriptions', icon: '🔁', label: 'Subscriptions' },
+
+    // Shopping & Personal
+    { keyword: 'shopping', icon: '🛍️', label: 'Shopping' },
+    { keyword: 'clothing', icon: '👕', label: 'Clothing' },
+    { keyword: 'technology', icon: '💻', label: 'Technology' },
+    { keyword: 'personal-care', icon: '🧴', label: 'Personal Care' },
+    { keyword: 'beauty', icon: '💄', label: 'Beauty' },
+
+    // Family & Education
+    { keyword: 'childcare', icon: '🧒', label: 'Childcare' },
+    { keyword: 'education', icon: '📚', label: 'Education' },
+    { keyword: 'pets', icon: '🐕', label: 'Pets' },
+
+    // Giving & Misc
+    { keyword: 'gifts', icon: '🎁', label: 'Gifts' },
+    { keyword: 'donations', icon: '🎗️', label: 'Donations' },
+    { keyword: 'taxes', icon: '🧾', label: 'Taxes' },
+    { keyword: 'debt', icon: '💳', label: 'Debt Payments' },
+
+    // Travel & Work
+    { keyword: 'travel', icon: '✈️', label: 'Travel' },
+    { keyword: 'work', icon: '💼', label: 'Work' },
+
+    // Sports & Other
+    { keyword: 'sports', icon: '⚽', label: 'Sports' },
+    { keyword: 'fun', icon: '🎊', label: 'Fun' },
     { keyword: 'other', icon: '📌', label: 'Other' },
   ],
 };
