@@ -22,4 +22,4 @@ RUN echo "DEBUG1: contents of /app after COMPILE" && ls -la /app
 
 EXPOSE 4000
 
-CMD [ "node", "dist/index.js" ]
+CMD [ "node", "/index.js" ]
