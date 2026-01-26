@@ -23,4 +23,4 @@ RUN echo "DEBUG2: contents of /app after COMPILE" && ls -la /app/dist
 
 EXPOSE 4000
 
-CMD [ "node", "dist/index.js" ]
+CMD [ "node", "dist/src/index.js" ]
