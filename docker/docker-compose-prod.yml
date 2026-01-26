@@ -14,7 +14,7 @@ services:
       - ./FinanzNew/dbv17:/var/lib/postgresql/data
 
   finanz_backend:
-    build: ../Dockerfile
+    build: ..
     restart: always
     container_name: finanz_backend
     depends_on:
