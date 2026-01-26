@@ -10,6 +10,7 @@ import user from "./modules/middleware/user";
 import dotenv from "dotenv";
 import aiService from "./services/ai.service";
 import { graphqlUploadExpress } from "graphql-upload-minimal";
+import packageJson from "../package.json";
 
 dotenv.config({ path: __dirname + "/../.env" });
 
@@ -53,6 +54,9 @@ const start = async () => {
 
   app.get("/ping", (_, res) => {
     res.send("pong...");
+  });
+  app.get("/health", (_, res) => {
+    res.json({ status: "ok", version: packageJson.version });
   });
 
   await apolloServer
