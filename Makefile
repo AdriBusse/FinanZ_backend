@@ -14,13 +14,13 @@ help:                                                                    		     
 setup-ts-node-global: yarn global add ts-node
 init: node-install docker-up 
 
-node-install: yarn
+node-install: npm install
 
 create-migration: 
-	yarn run typeorm migration:generate -d src/migrations -n migration
+	npm run typeorm migration:generate -d src/migrations -n migration
 
 run-migrations: 
-	yarn typeorm migration:run
+	npm typeorm migration:run
 
 update-dump:
 	docker exec backend-finanzdb-1 pg_dump -U admin finanz | gzip --stdout > dump.sql.gz
@@ -35,8 +35,8 @@ insert-data:
 	docker exec -i backend-finanzdb-1 pg_restore -U admin -C -f dump.sql
 	
 init-frontend:
-	yarn install --force
-	yarn build
+	npm install
+	npm run build
 
 docker-up:																				## create docker containers
 	docker compose -f docker-compose-dev.yml up -d
@@ -45,4 +45,4 @@ docker-down:
 	docker-compose -f docker-compose-dev.yml down
 
 run-dev:
-	make docker-up && yarn dev
+	make docker-up && npm run dev
