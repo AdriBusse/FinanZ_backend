@@ -54,6 +54,7 @@ import { CreateExpenseTransactionTemplateResolver } from "../modules/graphql/Exp
 import { UpdateExpenseTransactionTemplateResolver } from "../modules/graphql/Expense/Template/UpdateExpenseTransactionTemplate.resolver";
 import { DeleteExpenseTransactionTemplateResolver } from "../modules/graphql/Expense/Template/DeleteExpenseTransactionTemplate.resolver";
 import { GetExpenseTransactionTemplatesResolver, GetExpenseTransactionTemplateResolver } from "../modules/graphql/Expense/Template/GetExpenseTransactionTemplates.resolver";
+import { VoiceResolver } from "../modules/graphql/Voice/Voice.resolver";
 
 export const createSchema = () => {
   return buildSchema({
@@ -118,6 +119,7 @@ export const createSchema = () => {
       
       // AI utilities
       CategorizeExpenseResolver,
+      VoiceResolver,
 
       GetMarketData,
       getSupportedVsCurrencies,
