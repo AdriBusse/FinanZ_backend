@@ -19,6 +19,7 @@ RUN npm install
 COPY . .
 RUN npm run compile
 RUN echo "DEBUG1: contents of /app after COMPILE" && ls -la /app
+RUN echo "DEBUG2: contents of /app after COMPILE" && ls -la /app/dist
 
 EXPOSE 4000
 
