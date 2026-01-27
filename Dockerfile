@@ -17,7 +17,7 @@ RUN npm install
 
 # Bundle app source
 COPY . .
-RUN npm run compile && cp ormconfig.js dist/ && cp ormconfigTMP.json dist/
+RUN npm run compile && cp ormconfig.js dist/ && cp ormconfig.js dist/src
 RUN echo "DEBUG1: contents of /app after COMPILE" && ls -la /app
 RUN echo "DEBUG2: contents of /app after COMPILE" && ls -la /app/dist
 
