@@ -67,6 +67,7 @@ const start = async () => {
     });
   apolloServer.applyMiddleware({
     app,
+    bodyParserConfig: { limit: "50mb" },
     cors: {
       credentials: true,
       origin: "*",

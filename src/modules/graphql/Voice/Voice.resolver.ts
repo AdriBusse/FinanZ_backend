@@ -2,6 +2,7 @@ import { Arg, Ctx, Mutation, Resolver, UseMiddleware } from "type-graphql";
 import { GraphQLUpload, FileUpload } from "graphql-upload-minimal";
 import { isAuth } from "../../middleware/isAuth";
 import { MyContext } from "../../../types/MyContext";
+import { Readable } from "stream";
 import { Expense } from "../../../entity/Expense";
 import { ExpenseCategory } from "../../../entity/ExpenseCategory";
 import { ExpenseTransaction } from "../../../entity/ExpenseTransaction";
@@ -15,8 +16,10 @@ export class VoiceResolver {
   async processVoiceExpense(
     @Arg("expenseId") expenseId: string,
     // Disable validation so Upload payload isn't rejected by class-validator
-    @Arg("file", () => GraphQLUpload, { validate: false }) file: Promise<FileUpload>,
-    @Arg("language", { nullable: true }) language: string,
+    @Arg("file", () => GraphQLUpload, { validate: false, nullable: true }) file: Promise<FileUpload> | null,
+    @Arg("base64File", () => String, { nullable: true }) base64File: string | null,
+    @Arg("fileExtension", () => String, { nullable: true }) fileExtension: string | null,
+    @Arg("language", () => String, { nullable: true }) language: string,
     @Ctx() ctx: MyContext
   ): Promise<VoiceExpenseResult> {
     const user = ctx.res.locals.user;
@@ -35,13 +38,40 @@ export class VoiceResolver {
       }
 
       const categories = await ExpenseCategory.find({ user });
-      const upload = await file;
+      
+      let upload: FileUpload;
+      if (base64File) {
+        const ext = fileExtension || 'm4a';
+        upload = {
+          filename: `audio.${ext}`,
+          mimetype: `audio/${ext}`,
+          encoding: '7bit',
+          createReadStream: () => {
+            const buffer = Buffer.from(base64File, 'base64');
+            return Readable.from(buffer);
+          }
+        } as FileUpload;
+      } else if (file) {
+        try {
+          upload = await file;
+          if (!upload || !upload.createReadStream) {
+            throw new Error("Invalid file payload received. Expected a multipart file.");
+          }
+        } catch (err: any) {
+          console.error("[voice] processVoiceExpense: file upload error", err);
+          throw new Error(`File upload failed: ${err.message || 'Unknown error'}`);
+        }
+      } else {
+        throw new Error("No file or base64File provided");
+      }
+
       const res = await voiceService.processVoiceExpense({
         upload,
         ai: ctx.ai,
         categories: categories.map((c) => ({ id: `${c.id}`, name: c.name })),
         currency: expense.currency,
         language,
+        userId: user?.id ? String(user.id) : undefined,
       });
       console.log("[voice] processVoiceExpense: success", {
         expenseId,

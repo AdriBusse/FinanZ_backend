@@ -1,6 +1,9 @@
 #!/usr/bin/make
 
 SHELL = /bin/sh
+DEV_COMPOSE = docker compose -f docker/docker-compose-dev.yml
+
+.PHONY: help backend-up docker-up docker-down run-dev
 
 UID := $(shell id -u)
 GID := $(shell id -g)
@@ -38,11 +41,13 @@ init-frontend:
 	npm install
 	npm run build
 
-docker-up:																				## create docker containers
-	docker compose -f docker-compose-dev.yml up -d
+backend-up:																			## start backend and its database
+	$(DEV_COMPOSE) up -d backend
+
+docker-up:																				## start all development containers
+	$(DEV_COMPOSE) up -d
 
 docker-down:
-	docker-compose -f docker-compose-dev.yml down
+	$(DEV_COMPOSE) down
 
-run-dev:
-	make docker-up && npm run dev
+run-dev: backend-up

@@ -2,9 +2,10 @@ import fs from "fs";
 import path from "path";
 import { randomUUID } from "crypto";
 import OpenAI from "openai";
+import { observeOpenAI } from "@langfuse/openai";
+import Langfuse from "langfuse";
 import { AiService } from "./ai.service";
 import type { FileUpload } from "graphql-upload-minimal";
-
 
 export type VoiceExtraction = {
   id: string;
@@ -17,37 +18,53 @@ export type VoiceExtraction = {
 
 type CategorySummary = { id: string; name: string };
 
+// Singleton Langfuse client — reused across all requests
+const langfuse = new Langfuse({
+  publicKey: process.env.LANGFUSE_PUBLIC_KEY,
+  secretKey: process.env.LANGFUSE_SECRET_KEY,
+  baseUrl: process.env.LANGFUSE_HOST,
+  // Gracefully disable tracing if keys are not configured
+  enabled: !!(process.env.LANGFUSE_PUBLIC_KEY && process.env.LANGFUSE_SECRET_KEY),
+});
+
 export class VoiceService {
-  private openai: OpenAI | null;
+  private rawOpenai: OpenAI | null;
 
   constructor() {
-    this.openai = process.env.OPENAI_API_KEY
+    this.rawOpenai = process.env.OPENAI_API_KEY
       ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
       : null;
   }
 
   private ensureClient() {
-    if (!this.openai) {
+    if (!this.rawOpenai) {
       throw new Error(
         "Missing OPENAI_API_KEY. Please add it to backend/.env to enable voice transcription."
       );
     }
-    return this.openai;
+    // Wrap with Langfuse observer, binding to the current trace so all
+    // OpenAI calls show up as children of the parent trace in Langfuse.
+    return observeOpenAI(this.rawOpenai, {
+      generationName: 'NestJS-OpenAI-Generation', // Optional: identifier for Langfuse UI
+    });
   }
 
   private async persistUpload(file: FileUpload) {
     if (!file || typeof (file as any).createReadStream !== "function") {
       throw new Error("Invalid upload payload received.");
     }
-    console.log("[voice] persistUpload: saving temp file", {
-      filename: file.filename,
-      mimetype: (file as any).mimetype,
-      encoding: (file as any).encoding,
-    });
+
     const uploadDir = path.join(__dirname, "..", "..", "tmp", "voice");
     await fs.promises.mkdir(uploadDir, { recursive: true });
-    const tempFilePath = path.join(uploadDir, `${randomUUID()}-${file.filename}`);
-    const stream = file.createReadStream();
+
+    const fileUpload = file as FileUpload;
+    console.log("[voice] persistUpload: saving temp file from stream", {
+      filename: fileUpload.filename,
+      mimetype: (fileUpload as any).mimetype,
+      encoding: (fileUpload as any).encoding,
+    });
+    const tempFilePath = path.join(uploadDir, `${randomUUID()}-${fileUpload.filename}`);
+    const stream = fileUpload.createReadStream();
     await new Promise<void>((resolve, reject) => {
       const writeStream = fs.createWriteStream(tempFilePath);
       stream
@@ -58,47 +75,57 @@ export class VoiceService {
     return tempFilePath;
   }
 
-  private async transcribe(tempFilePath: string, language?: string): Promise<string> {
+  private async transcribe(
+    tempFilePath: string,
+    language: string | undefined,
+  ): Promise<string> {
     const client = this.ensureClient();
-    const fileStream = fs.createReadStream(tempFilePath);
+
     console.log("[voice] transcribe: start", { tempFilePath });
 
-    // Prefer GPT-4o transcription if available, otherwise fall back to whisper-1
     try {
-      const transcription = await client.audio.transcriptions.create({
-        file: fileStream,
-        model: "gpt-4o-transcribe",
+      // Prefer GPT-4o transcription, fall back to whisper-1
+      try {
+        const transcription = await client.audio.transcriptions.create({
+          file: fs.createReadStream(tempFilePath),
+          model: "gpt-4o-transcribe",
+          ...(language ? { language } : {}),
+        });
+        if ((transcription as any)?.text) {
+          const text = (transcription as any).text as string;
+          return text;
+        }
+      } catch (error) {
+        console.warn("[voice] gpt-4o-transcribe failed, falling back to whisper-1", error);
+      }
+
+      const whisper = await client.audio.transcriptions.create({
+        file: fs.createReadStream(tempFilePath),
+        model: "whisper-1",
         ...(language ? { language } : {}),
       });
-      if ((transcription as any)?.text) {
-        return (transcription as any).text as string;
-      }
-    } catch (error) {
-      console.warn("[voice] gpt-4o-transcribe failed, falling back to whisper-1", error);
+      const text = (whisper as any)?.text ?? "";
+      console.log("[voice] transcribe: whisper completed");
+      return text;
+    } catch (err) {
+      throw err;
     }
-
-    const whisper = await client.audio.transcriptions.create({
-      file: fs.createReadStream(tempFilePath),
-      model: "whisper-1",
-      ...(language ? { language } : {}),
-    });
-    console.log("[voice] transcribe: whisper completed");
-    return (whisper as any)?.text ?? "";
   }
 
   private async extractStructuredData(
     transcription: string,
-    currency?: string,
-    categories?: CategorySummary[]
+    currency: string | undefined,
+    categories: CategorySummary[] | undefined,
   ) {
     const client = this.ensureClient();
+
     const currencyHint = currency ? `The expense currency is "${currency}". if the currency is d cut the last 3 zeros` : "";
     const categoryList = categories?.length
       ? `Choose the best matching category from this list: ${categories
-          .map((c) => `"${c.name}"`)
-          .join(", ")}.`
+        .map((c) => `"${c.name}"`)
+        .join(", ")}.`
       : "";
-    const prompt = `
+    const systemPrompt = `
     Most used languages are german or english.
     You are a financial assistant. Extract a spending title and amount from the user's transcription.
     ${currencyHint}
@@ -117,14 +144,8 @@ Return JSON of the shape:
     const completion = await client.chat.completions.create({
       model: process.env.OPENAI_TEXT_MODEL || "gpt-4o-mini",
       messages: [
-        {
-          role: "system",
-          content: prompt.trim(),
-        },
-        {
-          role: "user",
-          content: transcription,
-        },
+        { role: "system", content: systemPrompt.trim() },
+        { role: "user", content: transcription },
       ],
       response_format: { type: "json_object" },
     });
@@ -171,6 +192,7 @@ Return JSON of the shape:
 
   /**
    * Process uploaded audio: persist temporarily, transcribe, extract title/amount, cleanup temp file.
+   * All OpenAI calls are grouped under a single Langfuse trace.
    */
   async processVoiceExpense(options: {
     upload: Promise<FileUpload> | FileUpload;
@@ -178,16 +200,19 @@ Return JSON of the shape:
     categories?: CategorySummary[];
     currency?: string;
     language?: string;
+    userId?: string;
   }): Promise<VoiceExtraction> {
     const { upload, ai, categories, currency, language } = options;
+
     const resolvedUpload = (await Promise.resolve(upload)) as FileUpload;
+
     const tempFilePath = await this.persistUpload(resolvedUpload);
     try {
       const transcription = await this.transcribe(tempFilePath, language);
       const { title, amount, category } = await this.extractStructuredData(
         transcription,
         currency,
-        categories
+        categories,
       );
 
       // Try to map the model-picked category to an existing one; fallback to AI categorizer.
@@ -207,18 +232,25 @@ Return JSON of the shape:
         categorySuggestion = await this.suggestCategory(ai, title, categories);
       }
 
-      return {
+      const result = {
         id: `temp-${randomUUID()}`,
         transcription,
         title,
         amount,
         ...categorySuggestion,
       };
+
+
+      return result;
+    } catch (err) {
+      throw err;
     } finally {
       fs.promises
         .unlink(tempFilePath)
         .catch(() => null); // best-effort cleanup
       console.log("[voice] cleanup temp file", { tempFilePath });
+      // Flush pending events to Langfuse (non-blocking)
+      langfuse.flushAsync().catch(() => null);
     }
   }
 }
