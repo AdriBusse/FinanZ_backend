@@ -12,9 +12,14 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
     if (!token) return next();
 
-    const { username }: any = jwt.verify(token, process.env.JWT_SECRET!);
+    const { userId, username }: any = jwt.verify(
+      token,
+      process.env.JWT_SECRET!
+    );
 
-    const user = await User.findOne({ username });
+    const user = userId
+      ? await User.findOne(userId)
+      : await User.findOne({ username });
 
     res.locals.user = user;
     return next();

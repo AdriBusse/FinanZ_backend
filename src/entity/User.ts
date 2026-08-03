@@ -4,7 +4,7 @@ import { SavingTransaction } from "./SavingTransaction";
 import { SavingDepot } from "./SavingDepot";
 import { ETFTransaction } from "./ETFTransaction";
 import { ETF } from "./ETF";
-import { IsEmail, Length } from "class-validator";
+import { IsEmail, IsOptional, Length } from "class-validator";
 import { Field, ID, ObjectType } from "type-graphql";
 import {
   BaseEntity,
@@ -19,6 +19,8 @@ import {
 import bcrypt from "bcrypt";
 import { Exclude } from "class-transformer";
 import { ExpenseTransaction } from "./ExpenseTransaction";
+import { UserIdentity } from "./UserIdentity";
+import { AuthProvider } from "../types/AuthProvider";
 
 @ObjectType()
 @Entity({ name: "Users" })
@@ -49,10 +51,11 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   lastName: string;
 
-  @Column()
+  @Column({ type: "varchar", nullable: true })
+  @IsOptional()
   @Length(6, 255, { message: "Must be at least 6 characters long" })
   @Exclude()
-  password: string;
+  password: string | null;
 
   @Field()
   @Column("text", { unique: true })
@@ -91,9 +94,20 @@ export class User extends BaseEntity {
   @OneToMany(() => ExpenseCategory, (expenseCategory) => expenseCategory.user)
   expenseCategory: ExpenseCategory[];
 
+  @OneToMany(() => UserIdentity, (identity) => identity.user)
+  identities: UserIdentity[];
+
+  @Field(() => [AuthProvider])
+  linkedProviders: AuthProvider[];
+
+  @Field()
+  hasPassword: boolean;
+
   @BeforeInsert()
   async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 12);
+    if (this.password) {
+      this.password = await bcrypt.hash(this.password, 12);
+    }
   }
 
   @Field()

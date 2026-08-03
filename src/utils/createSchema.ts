@@ -55,6 +55,7 @@ import { UpdateExpenseTransactionTemplateResolver } from "../modules/graphql/Exp
 import { DeleteExpenseTransactionTemplateResolver } from "../modules/graphql/Expense/Template/DeleteExpenseTransactionTemplate.resolver";
 import { GetExpenseTransactionTemplatesResolver, GetExpenseTransactionTemplateResolver } from "../modules/graphql/Expense/Template/GetExpenseTransactionTemplates.resolver";
 import { VoiceResolver } from "../modules/graphql/Voice/Voice.resolver";
+import { GoogleAuthResolver } from "../modules/graphql/User/googleAuth";
 
 export const createSchema = () => {
   return buildSchema({
@@ -66,6 +67,7 @@ export const createSchema = () => {
       MeResolver,
       SignupResolver,
       ChangePasswordResolver,
+      GoogleAuthResolver,
 
       SavingDepotResolver,
       SavingTransactionResolver,

@@ -7,9 +7,23 @@ import { FieldResolver, Resolver, ResolverInterface, Root } from "type-graphql";
 import { SavingDepot } from "../../../entity/SavingDepot";
 import { User } from "../../../entity/User";
 import { ETF } from "../../../entity/ETF";
+import { AuthProvider } from "../../../types/AuthProvider";
 
 @Resolver(() => User)
 export class UserResolver implements ResolverInterface<User> {
+  @FieldResolver(() => [AuthProvider])
+  async linkedProviders(@Root() user: User): Promise<AuthProvider[]> {
+    const userRecord = await User.findOneOrFail(user.id, {
+      relations: ["identities"],
+    });
+    return userRecord.identities.map((identity) => identity.provider);
+  }
+
+  @FieldResolver(() => Boolean)
+  hasPassword(@Root() user: User): boolean {
+    return Boolean(user.password);
+  }
+
   @FieldResolver()
   async etfs(@Root() user: User): Promise<ETF[]> {
     const etfs = await User.findOneOrFail(user.id, {

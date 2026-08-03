@@ -2,8 +2,8 @@ import { Arg, Mutation, Resolver } from "type-graphql";
 import bcrypt from "bcrypt";
 import { User } from "../../../entity/User";
 import { isEmpty } from "class-validator";
-import jwt from "jsonwebtoken";
 import { LoginType } from "../../../types/LoginType";
+import { issueAuthToken } from "../../../services/auth-token.service";
 
 @Resolver(LoginType)
 export class LoginResolver {
@@ -24,13 +24,12 @@ export class LoginResolver {
       if (!user) {
         throw new Error("User not found");
       }
-      const passwordMatches = await bcrypt.compare(password, user!.password);
+      if (!user.password) throw new Error("Wrong Credentials");
+      const passwordMatches = await bcrypt.compare(password, user.password);
 
       if (!passwordMatches) throw new Error("Wrong Credentials");
 
-      const token = jwt.sign({ username }, process.env.JWT_SECRET!, {
-        expiresIn: "60d",
-      });
+      const token = issueAuthToken(user);
 
       return {
         user,

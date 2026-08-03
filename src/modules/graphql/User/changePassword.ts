@@ -17,6 +17,9 @@ export class ChangePasswordResolver {
       const user: User | undefined = ctx.res.locals.user;
       if (!user) throw new Error("Unauthenticated");
 
+      if (!user.password) {
+        throw new Error("Use Google verification to set a password");
+      }
       const matches = await bcrypt.compare(currentPassword, user.password);
       if (!matches) throw new Error("Current password is incorrect");
 
