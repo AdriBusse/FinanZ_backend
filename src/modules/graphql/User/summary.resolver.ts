@@ -54,6 +54,7 @@ export class Summary {
 
       const todayExpenses = await ExpenseTransaction.find({
         where: {
+          user,
           createdAt: Between(
             new Date(new Date().setDate(new Date().getDate() - 1)),
             new Date()

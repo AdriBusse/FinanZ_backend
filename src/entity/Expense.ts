@@ -45,6 +45,9 @@ export class Expense extends BaseEntity {
   @Field()
   sum: number;
 
+  @Field(() => Int)
+  transactionCount: number;
+
   @Field(() => User)
   @ManyToOne(() => User, (user) => user.expenseDepots)
   user: User;

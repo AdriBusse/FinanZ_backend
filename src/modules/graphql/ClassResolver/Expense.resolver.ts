@@ -2,6 +2,7 @@ import { Expense } from "../../../entity/Expense";
 import {
   Arg,
   FieldResolver,
+  Int,
   Resolver,
   ResolverInterface,
   Root,
@@ -43,17 +44,30 @@ export class ExpenseResolver implements ResolverInterface<Expense> {
 
   @FieldResolver()
   async sum(@Root() expense: Expense): Promise<number> {
-    let sum = 0;
+    if (typeof expense.sum === "number") {
+      return expense.sum;
+    }
 
-    const expenseTransactions = await ExpenseTransaction.find({
-      where: { expense },
-    });
+    const total = await ExpenseTransaction.createQueryBuilder("transaction")
+      .select("COALESCE(SUM(transaction.amount), 0)", "sum")
+      .where("transaction.expenseId = :expenseId", { expenseId: expense.id })
+      .getRawOne();
 
-    expenseTransactions.forEach((expenseTransaction) => {
-      sum += expenseTransaction.amount;
-    });
+    return parseFloat(Number(total.sum).toFixed(2));
+  }
 
-    return parseFloat(sum.toFixed(2));
+  @FieldResolver(() => Int)
+  async transactionCount(@Root() expense: Expense): Promise<number> {
+    if (typeof expense.transactionCount === "number") {
+      return expense.transactionCount;
+    }
+
+    const total = await ExpenseTransaction.createQueryBuilder("transaction")
+      .select("COUNT(transaction.id)", "count")
+      .where("transaction.expenseId = :expenseId", { expenseId: expense.id })
+      .getRawOne();
+
+    return Number(total.count);
   }
 
   @FieldResolver()

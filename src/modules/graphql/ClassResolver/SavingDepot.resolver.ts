@@ -42,16 +42,15 @@ export class SavingDepotResolver implements ResolverInterface<SavingDepot> {
 
   @FieldResolver()
   async sum(@Root() savingDepot: SavingDepot): Promise<number> {
-    let sum = 0;
+    if (typeof savingDepot.sum === "number") {
+      return savingDepot.sum;
+    }
 
-    const savingTransactions = await SavingTransaction.find({
-      where: { depot: savingDepot },
-    });
+    const total = await SavingTransaction.createQueryBuilder("transaction")
+      .select("COALESCE(SUM(transaction.amount), 0)", "sum")
+      .where("transaction.depotId = :depotId", { depotId: savingDepot.id })
+      .getRawOne();
 
-    savingTransactions.forEach((savingTransaction) => {
-      sum += savingTransaction.amount;
-    });
-
-    return parseFloat(sum.toFixed(2));
+    return parseFloat(Number(total.sum).toFixed(2));
   }
 }
