@@ -9,7 +9,7 @@ import path from "path";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    bodyParser: true,
+    bodyParser: false,
   });
 
   app.enableCors({
@@ -17,8 +17,12 @@ async function bootstrap() {
     origin: "*",
   });
 
-  // Enable multipart requests for GraphQL upload handling
-  app.use(graphqlUploadExpress({ maxFileSize: 20 * 1024 * 1024, maxFiles: 1 }));
+  // Increase payload limit to 50MB for JSON (base64 voice recordings) and URL-encoded bodies
+  app.use(express.json({ limit: "50mb" }));
+  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
+  // Enable multipart requests for GraphQL file uploads (50MB)
+  app.use(graphqlUploadExpress({ maxFileSize: 50 * 1024 * 1024, maxFiles: 10 }));
 
   // Static assets
   app.use(express.static(path.join(process.cwd(), "public")));
