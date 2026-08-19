@@ -3,7 +3,7 @@
 SHELL = /bin/sh
 DEV_COMPOSE = docker compose -f docker/docker-compose-dev.yml
 
-.PHONY: help backend-up docker-up docker-down run-dev
+.PHONY: help backend-up docker-up docker-down run-dev migration-create migration-generate migration-run migration-revert migration-show
 
 UID := $(shell id -u)
 GID := $(shell id -g)
@@ -19,11 +19,20 @@ init: node-install docker-up
 
 node-install: npm install
 
-create-migration: 
-	npm run typeorm migration:generate -d src/migrations -n migration
+migration-create: ## create an empty migration: make migration-create name=MyMigration
+	npm run migration:create src/migrations/$(name)
 
-run-migrations: 
-	npm typeorm migration:run
+migration-generate: ## generate a migration from entity diff: make migration-generate name=MyMigration
+	npm run migration:generate src/migrations/$(name)
+
+migration-run: ## run all pending migrations manually
+	npm run migration:run
+
+migration-revert: ## revert the latest migration
+	npm run migration:revert
+
+migration-show: ## show status of all migrations
+	npm run migration:show
 
 update-dump:
 	docker exec backend-finanzdb-1 pg_dump -U admin finanz | gzip --stdout > dump.sql.gz
@@ -32,8 +41,7 @@ update-dump:
 load-dump:
 	docker exec -i backend-finanzdb-1 psql -U admin -d finanz < dump.sql
 
-
-#ausführen wenn relationen schon gesetzt sind
+# ausführen wenn relationen schon gesetzt sind
 insert-data:
 	docker exec -i backend-finanzdb-1 pg_restore -U admin -C -f dump.sql
 	
