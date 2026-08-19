@@ -1,3 +1,8 @@
+const isProd =
+  process.env.prod === "true" ||
+  process.env.prod === "1" ||
+  process.env.NODE_ENV === "production";
+
 module.exports = {
   name: "default",
   type: "postgres",
@@ -8,9 +13,9 @@ module.exports = {
   database: process.env.DB_DATABASE,
   synchronize: true,
   logging: true,
-  entities: process.env.prod ? ["./dist/src/entity/*.*"] : ["./src/entity/*.*"],
-  migrations: process.env.prod
+  entities: isProd ? ["./dist/src/entity/*.*"] : ["./src/entity/*.*"],
+  migrations: isProd
     ? ["./dist/src/migrations/*.*"]
     : ["src/migrations/*.*"],
-  seeds: process.env.prod ? ["src/seeds/*.*"] : ["src/seeds/*.*"],
+  seeds: isProd ? ["src/seeds/*.*"] : ["src/seeds/*.*"],
 };

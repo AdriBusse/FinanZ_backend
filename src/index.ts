@@ -1,3 +1,4 @@
+import "./instrument";
 import "reflect-metadata";
 import { createConnection } from "typeorm";
 import Express from "express";
@@ -10,6 +11,7 @@ import user from "./modules/middleware/user";
 import dotenv from "dotenv";
 import aiService from "./services/ai.service";
 import { graphqlUploadExpress } from "graphql-upload-minimal";
+import * as Sentry from "@sentry/node";
 import packageJson from "../package.json";
 
 dotenv.config({ path: __dirname + "/../.env" });
@@ -63,6 +65,8 @@ const start = async () => {
       origin: "*",
     },
   });
+
+  Sentry.setupExpressErrorHandler(app);
 
   app.listen(4000, () => {
     console.log("Server listen on port 4000");
