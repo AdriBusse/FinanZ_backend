@@ -1,0 +1,142 @@
+import { CategoryMetadataRecord } from "../types/category-metadata.type";
+
+export const categoryMetadata: CategoryMetadataRecord = {
+  colors: [
+    { key: "red", hex: "#ef4444", label: "Red" },
+    { key: "orange", hex: "#f97316", label: "Orange" },
+    { key: "yellow", hex: "#eab308", label: "Yellow" },
+    { key: "green", hex: "#22c55e", label: "Green" },
+    { key: "cyan", hex: "#06b6d4", label: "Cyan" },
+    { key: "blue", hex: "#3b82f6", label: "Blue" },
+    { key: "violet", hex: "#8b5cf6", label: "Violet" },
+    { key: "pink", hex: "#ec4899", label: "Pink" },
+    { key: "amber", hex: "#f59e0b", label: "Amber" },
+    { key: "emerald", hex: "#10b981", label: "Emerald" },
+    { key: "teal", hex: "#14b8a6", label: "Teal" },
+    { key: "indigo", hex: "#6366f1", label: "Indigo" },
+    { key: "purple", hex: "#a855f7", label: "Purple" },
+    { key: "rose", hex: "#f43f5e", label: "Rose" },
+    { key: "lime", hex: "#84cc16", label: "Lime" },
+    { key: "sky", hex: "#06b6d4", label: "Sky" },
+    { key: "pink-2", hex: "#f472b6", label: "Pink" },
+    { key: "violet-2", hex: "#a78bfa", label: "Violet" },
+    { key: "emerald-2", hex: "#34d399", label: "Emerald" },
+    { key: "amber-2", hex: "#fbbf24", label: "Amber" },
+  ],
+  icons: [
+    // Food & Dining
+    { keyword: 'food', icon: 'pizza', label: 'Food' },
+    { keyword: 'restaurant', icon: 'utensils', label: 'Restaurants' },
+    { keyword: 'groceries', icon: 'shopping-basket', label: 'Groceries' },
+    { keyword: 'dining', icon: 'utensils-crossed', label: 'Dining' },
+    { keyword: 'bakery', icon: 'croissant', label: 'Bakery' },
+    { keyword: 'dessert', icon: 'cookie', label: 'Dessert' },
+    { keyword: 'produce', icon: 'carrot', label: 'Produce' },
+    { keyword: 'drink', icon: 'cup-soda', label: 'Drinks' },
+    { keyword: 'coffee', icon: 'coffee', label: 'Coffee' },
+    { keyword: 'alcohol', icon: 'beer', label: 'Alcohol' },
+    { keyword: 'wine', icon: 'wine', label: 'Wine' },
+    { keyword: 'chef', icon: 'chef-hat', label: 'Cooking' },
+
+    // Housing & Utilities
+    { keyword: 'rent', icon: 'house', label: 'Rent' },
+    { keyword: 'home', icon: 'leaf', label: 'Home & Garden' },
+    { keyword: 'mortgage', icon: 'building', label: 'Mortgage' },
+    { keyword: 'property', icon: 'landmark', label: 'Property' },
+    { keyword: 'furniture', icon: 'sofa', label: 'Furniture' },
+    { keyword: 'maintenance', icon: 'hammer', label: 'Maintenance' },
+    { keyword: 'bills', icon: 'file-text', label: 'Bills' },
+    { keyword: 'receipts', icon: 'files', label: 'Receipts' },
+    { keyword: 'utilities', icon: 'plug', label: 'Utilities' },
+    { keyword: 'electricity', icon: 'zap', label: 'Electricity' },
+    { keyword: 'lighting', icon: 'lamp', label: 'Lighting' },
+    { keyword: 'water', icon: 'droplet', label: 'Water' },
+    { keyword: 'gas-home', icon: 'flame', label: 'Gas (Home)' },
+    { keyword: 'internet', icon: 'wifi', label: 'Internet' },
+    { keyword: 'phone', icon: 'smartphone', label: 'Mobile Phone' },
+    { keyword: 'keys', icon: 'key', label: 'Keys' },
+
+    // Transport
+    { keyword: 'transport', icon: 'car', label: 'Transport' },
+    { keyword: 'car', icon: 'car-front', label: 'Car' },
+    { keyword: 'taxi', icon: 'car-taxi-front', label: 'Taxi' },
+    { keyword: 'fuel', icon: 'fuel', label: 'Fuel' },
+    { keyword: 'public-transport', icon: 'bus', label: 'Public Transport' },
+    { keyword: 'train', icon: 'train-front', label: 'Train' },
+    { keyword: 'commute', icon: 'train-track', label: 'Commute' },
+    { keyword: 'parking', icon: 'parking-meter', label: 'Parking' },
+    { keyword: 'car-maintenance', icon: 'wrench', label: 'Car Maintenance' },
+    { keyword: 'bike-maintenance', icon: 'bike', label: 'Bike Maintenance' },
+
+    // Insurance & Health
+    { keyword: 'insurance', icon: 'shield', label: 'Insurance' },
+    { keyword: 'health', icon: 'heart-pulse', label: 'Health' },
+    { keyword: 'doctor', icon: 'stethoscope', label: 'Doctor' },
+    { keyword: 'hospital', icon: 'hospital', label: 'Hospital' },
+    { keyword: 'pharmacy', icon: 'pill', label: 'Pharmacy' },
+    { keyword: 'first-aid', icon: 'bandage', label: 'First Aid' },
+
+    // Entertainment & Subscriptions
+    { keyword: 'entertainment', icon: 'film', label: 'Entertainment' },
+    { keyword: 'streaming', icon: 'tv', label: 'Streaming' },
+    { keyword: 'music', icon: 'music', label: 'Music' },
+    { keyword: 'gaming', icon: 'gamepad-2', label: 'Gaming' },
+    { keyword: 'tickets', icon: 'ticket', label: 'Tickets' },
+    { keyword: 'popcorn', icon: 'popcorn', label: 'Cinema' },
+    { keyword: 'subscriptions', icon: 'repeat', label: 'Subscriptions' },
+
+    // Shopping & Personal
+    { keyword: 'shopping', icon: 'shopping-bag', label: 'Shopping' },
+    { keyword: 'cart', icon: 'shopping-cart', label: 'Cart' },
+    { keyword: 'clothing', icon: 'shirt', label: 'Clothing' },
+    { keyword: 'accessories', icon: 'watch', label: 'Accessories' },
+    { keyword: 'technology', icon: 'laptop', label: 'Technology' },
+    { keyword: 'phone-accessories', icon: 'phone', label: 'Phone' },
+    { keyword: 'personal-care', icon: 'spray-can', label: 'Personal Care' },
+    { keyword: 'bath', icon: 'bath', label: 'Bath' },
+    { keyword: 'grooming', icon: 'scissors', label: 'Grooming' },
+    { keyword: 'beauty', icon: 'sparkles', label: 'Beauty' },
+    { keyword: 'art', icon: 'palette', label: 'Art' },
+
+    // Family & Education
+    { keyword: 'childcare', icon: 'baby', label: 'Childcare' },
+    { keyword: 'education', icon: 'graduation-cap', label: 'Education' },
+    { keyword: 'books', icon: 'book-open', label: 'Books' },
+    { keyword: 'notebook', icon: 'notebook-pen', label: 'Notebook' },
+    { keyword: 'pets', icon: 'paw-print', label: 'Pets' },
+    { keyword: 'dog', icon: 'dog', label: 'Dog' },
+    { keyword: 'cat', icon: 'cat', label: 'Cat' },
+
+    // Giving & Misc
+    { keyword: 'gifts', icon: 'gift', label: 'Gifts' },
+    { keyword: 'donations', icon: 'ribbon', label: 'Donations' },
+    { keyword: 'charity', icon: 'hand-heart', label: 'Charity' },
+    { keyword: 'support', icon: 'heart-handshake', label: 'Support' },
+    { keyword: 'taxes', icon: 'receipt', label: 'Taxes' },
+    { keyword: 'calculator', icon: 'calculator', label: 'Calculator' },
+    { keyword: 'discounts', icon: 'badge-percent', label: 'Discounts' },
+    { keyword: 'debt', icon: 'credit-card', label: 'Debt Payments' },
+
+    // Travel & Work
+    { keyword: 'travel', icon: 'plane', label: 'Travel' },
+    { keyword: 'luggage', icon: 'luggage', label: 'Luggage' },
+    { keyword: 'hotel', icon: 'hotel', label: 'Hotel' },
+    { keyword: 'map', icon: 'map', label: 'Map' },
+    { keyword: 'location', icon: 'map-pin', label: 'Location' },
+    { keyword: 'compass', icon: 'compass', label: 'Compass' },
+    { keyword: 'backpack', icon: 'backpack', label: 'Backpack' },
+    { keyword: 'globe', icon: 'globe', label: 'Globe' },
+    { keyword: 'work', icon: 'briefcase', label: 'Work' },
+
+    // Sports & Other
+    { keyword: 'sports', icon: 'dumbbell', label: 'Sports' },
+    { keyword: 'trophy', icon: 'trophy', label: 'Trophy' },
+    { keyword: 'medal', icon: 'medal', label: 'Medal' },
+    { keyword: 'activity', icon: 'activity', label: 'Activity' },
+    { keyword: 'fun', icon: 'party-popper', label: 'Fun' },
+    { keyword: 'other', icon: 'pin', label: 'Other' },
+    { keyword: 'flag', icon: 'flag', label: 'Flag' },
+  ],
+};
+
+export default categoryMetadata;
