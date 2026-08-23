@@ -40,6 +40,7 @@ export class ExpenseTransaction extends BaseEntity {
   @Field(() => ExpenseCategory, { nullable: true })
   @ManyToOne(() => ExpenseCategory, (cat) => cat.transactions, {
     nullable: true,
+    onDelete: "SET NULL",
   })
   category: ExpenseCategory;
 

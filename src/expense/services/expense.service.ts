@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Expense } from "../entities/expense.entity";
+import { ExpenseTransaction } from "../entities/expense-transaction.entity";
+import { ExpenseTransactionTemplate } from "../entities/expense-transaction-template.entity";
 import { User } from "../../user/entities/user.entity";
 import { ExpenseCategoryService } from "./expense-category.service";
 
@@ -10,6 +12,10 @@ export class ExpenseService {
   constructor(
     @InjectRepository(Expense)
     private readonly expenseRepository: Repository<Expense>,
+    @InjectRepository(ExpenseTransaction)
+    private readonly transactionRepository: Repository<ExpenseTransaction>,
+    @InjectRepository(ExpenseTransactionTemplate)
+    private readonly templateRepository: Repository<ExpenseTransactionTemplate>,
     private readonly expenseCategoryService: ExpenseCategoryService
   ) {}
 
@@ -37,8 +43,11 @@ export class ExpenseService {
   }
 
   async createExpense(
-    name: string,
-    currency: string,
+    title: string,
+    currency: string | null,
+    monthlyRecurring: boolean | null,
+    spendingLimit: number | null,
+    skipTemplateIds: string[] | null,
     user: User
   ): Promise<Expense> {
     // Check if user has categories, if not create default ones
@@ -48,20 +57,48 @@ export class ExpenseService {
     }
 
     const expense = this.expenseRepository.create({
-      title: name,
+      title,
       currency: currency || "€",
+      monthlyRecurring: monthlyRecurring ?? false,
+      spendingLimit,
       user,
     });
 
-    return this.expenseRepository.save(expense);
+    const savedExpense = await this.expenseRepository.save(expense);
+
+    if (savedExpense.monthlyRecurring) {
+      const templates = await this.templateRepository.find({
+        where: { user: { id: user.id } },
+        relations: ["category"],
+      });
+      const skippedTemplateIds = new Set(skipTemplateIds ?? []);
+      const transactions = templates
+        .filter(template => !skippedTemplateIds.has(String(template.id)))
+        .map(template =>
+          this.transactionRepository.create({
+            describtion: template.describtion,
+            amount: template.amount,
+            category: template.category || undefined,
+            expense: savedExpense,
+            user,
+          })
+        );
+
+      if (transactions.length > 0) {
+        await this.transactionRepository.save(transactions);
+      }
+    }
+
+    return savedExpense;
   }
 
   async updateExpense(
     id: number | string,
-    name?: string,
+    title?: string,
     currency?: string,
-    isArchived?: boolean,
-    spendingLimit?: number,
+    archived?: boolean,
+    monthlyRecurring?: boolean,
+    spendingLimit?: number | null,
     user?: User
   ): Promise<Expense> {
     const expense = await this.expenseRepository.findOne({
@@ -71,9 +108,10 @@ export class ExpenseService {
       throw new NotFoundException("Expense not found");
     }
 
-    if (name !== undefined) expense.title = name;
+    if (title !== undefined) expense.title = title;
     if (currency !== undefined) expense.currency = currency;
-    if (isArchived !== undefined) expense.archived = isArchived;
+    if (archived !== undefined) expense.archived = archived;
+    if (monthlyRecurring !== undefined) expense.monthlyRecurring = monthlyRecurring;
     if (spendingLimit !== undefined) expense.spendingLimit = spendingLimit;
 
     return this.expenseRepository.save(expense);

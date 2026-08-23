@@ -6,6 +6,7 @@ import {
   ResolveField,
   Parent,
   Int,
+  ID,
 } from "@nestjs/graphql";
 import { UseGuards } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -53,28 +54,42 @@ export class ExpenseResolver {
   @Mutation(() => Expense)
   @UseGuards(GqlAuthGuard)
   async createExpense(
-    @Args("name") name: string,
-    @Args("currency") currency: string,
+    @Args("title") title: string,
+    @Args("currency", { nullable: true }) currency: string | null,
+    @Args("monthlyRecurring", { nullable: true }) monthlyRecurring: boolean | null,
+    @Args("spendingLimit", { nullable: true, type: () => Int })
+    spendingLimit: number | null,
+    @Args("skipTemplateIds", { nullable: true, type: () => [ID] })
+    skipTemplateIds: string[] | null,
     @CurrentUser() user: User
   ): Promise<Expense> {
-    return this.expenseService.createExpense(name, currency, user);
+    return this.expenseService.createExpense(
+      title,
+      currency,
+      monthlyRecurring,
+      spendingLimit,
+      skipTemplateIds,
+      user
+    );
   }
 
   @Mutation(() => Expense)
   @UseGuards(GqlAuthGuard)
   async updateExpense(
     @Args("id") id: string,
-    @Args("name", { nullable: true }) name: string,
+    @Args("title", { nullable: true }) title: string,
     @Args("currency", { nullable: true }) currency: string,
-    @Args("isArchived", { nullable: true }) isArchived: boolean,
+    @Args("archived", { nullable: true }) archived: boolean,
+    @Args("monthlyRecurring", { nullable: true }) monthlyRecurring: boolean,
     @Args("spendingLimit", { nullable: true, type: () => Int }) spendingLimit: number,
     @CurrentUser() user: User
   ): Promise<Expense> {
     return this.expenseService.updateExpense(
       id,
-      name,
+      title,
       currency,
-      isArchived,
+      archived,
+      monthlyRecurring,
       spendingLimit,
       user
     );

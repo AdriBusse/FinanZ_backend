@@ -10,7 +10,6 @@ import {
   BaseEntity,
 } from "typeorm";
 import { User } from "../../user/entities/user.entity";
-import { Expense } from "./expense.entity";
 
 @Entity({ name: "expenseTransactionTemplate" })
 @ObjectType()
@@ -31,12 +30,8 @@ export class ExpenseTransactionTemplate extends BaseEntity {
   @ManyToOne(() => User)
   user: User;
 
-  @Field(() => Expense, { nullable: true })
-  @ManyToOne(() => Expense, { nullable: true, onDelete: "CASCADE" })
-  expense: Expense;
-
   @Field(() => ExpenseCategory, { nullable: true })
-  @ManyToOne(() => ExpenseCategory, { nullable: true })
+  @ManyToOne(() => ExpenseCategory, { nullable: true, onDelete: "SET NULL" })
   category: ExpenseCategory;
 
   @Field()
