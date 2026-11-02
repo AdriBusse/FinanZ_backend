@@ -31,14 +31,16 @@ export class SavingTransactionResolver {
     @Args("amount") amount: number,
     @Args("depotId") depotId: string,
     @Args("date", { nullable: true, type: () => Int }) date: number,
-    @CurrentUser() user: User
+    @CurrentUser() user: User,
+    @Args("parentTransactionId", { nullable: true }) parentTransactionId?: string
   ): Promise<SavingTransaction> {
     return this.transactionService.createSavingTransaction(
       describtion,
       amount,
       depotId,
       date,
-      user
+      user,
+      parentTransactionId
     );
   }
 

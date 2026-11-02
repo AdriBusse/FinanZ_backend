@@ -19,7 +19,8 @@ export class SavingTransactionService {
     amount: number,
     depotId: number | string,
     date: number | undefined,
-    user: User
+    user: User,
+    parentTransactionId?: string
   ): Promise<SavingTransaction> {
     const depot = await this.depotRepository.findOne({
       where: { id: Number(depotId), user: { id: user.id } },
@@ -28,7 +29,17 @@ export class SavingTransactionService {
       throw new NotFoundException("Cannot find Depot!");
     }
 
+    let rootId: number | null = null;
+    if (parentTransactionId != null) {
+      const parent = await this.transactionRepository.findOne({
+        where: { id: Number(parentTransactionId), user: { id: user.id }, depot: { id: depot.id } },
+      });
+      if (!parent) throw new NotFoundException("Cannot find connected transaction in this depot!");
+      rootId = parent.parentTransactionId ?? parent.id;
+    }
+
     const transaction = this.transactionRepository.create({
+      parentTransactionId: rootId,
       describtion,
       amount,
       depot,

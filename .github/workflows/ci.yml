@@ -1,0 +1,26 @@
+name: Backend CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run compile
+      - run: node --test tests/*.test.cjs
+      - run: node tests/runtime-smoke.cjs
+      - name: Build container
+        run: docker build --pull -t finanz-backend:ci .
+      - name: Verify container runtime and native modules
+        run: docker run --rm finanz-backend:ci node tests/runtime-smoke.cjs

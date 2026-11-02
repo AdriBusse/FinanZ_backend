@@ -26,6 +26,13 @@ export class SavingTransaction extends BaseEntity {
   @Column({ type: "float", default: 0 })
   amount: number;
 
+  @Field(() => ID, { nullable: true })
+  @Column({ type: "int", nullable: true })
+  parentTransactionId: number | null;
+
+  @ManyToOne(() => SavingTransaction, { nullable: true, onDelete: "SET NULL" })
+  parentTransaction: SavingTransaction | null;
+
   @Field(() => User)
   @ManyToOne(() => User, (user) => user.savingTransactions)
   user: User;

@@ -1,3 +1,13 @@
+# Runtime
+
+Use Node.js 26.13.0 (LTS): `nvm install && nvm use`, then `npm ci`.
+Docker and CI use the same version. Rebuild containers after changing Node;
+existing images and native modules do not update automatically.
+
+```sh
+docker compose -f docker/docker-compose-dev.yml up -d --build backend
+```
+
 # Start development
 
 Start the backend and PostgreSQL together:

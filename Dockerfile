@@ -1,4 +1,4 @@
-FROM node:22
+FROM node:26.13.0-bookworm
 
 # Create app directory
 WORKDIR /app
@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package.json ./
 COPY package-lock.json ./
 
-RUN npm install
+RUN npm ci
 
 # Bundle app source
 COPY . .
